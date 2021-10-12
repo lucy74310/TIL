@@ -43,7 +43,7 @@ function delay(ms) {
 }
 
 async function getApple() {
-  await delay(1000);
+  await delay(2000);
   // throw "error";
   return "🍎";
 }
@@ -52,6 +52,8 @@ async function getBanana() {
   await delay(1000);
   return "🍌";
 }
+
+/* await 안쓸때*/
 /*
 function getBanana() {
   return delay(3000)
@@ -69,6 +71,7 @@ function pickFruits() {
 pickFruits().then(console.log);
 */
 
+/* await 쓸때 에러처리 */
 /*
 async function pickFruits() {
   try {
@@ -82,12 +85,35 @@ async function pickFruits() {
 pickFruits().then(console.log);
 */
 
-async function pickFruits() {
-  const applePromise
-  const apple = await getApple(); // banana 와 apple 을 받아오는데는 서로 연관이 없기 때문에 기다릴 필요가 x
-  const banana = await getBanana(); // 이것을 개선하려면 ..
+// 위코드의 한가지 문제점.
+// banana 와 apple 을 받아오는데는 서로 연관이 없기 때문에 서로 기다릴 필요가 x
 
+/*
+async function pickFruits() {
+  const applePromise = getApple(); // 프로미스를 만들면 바로 프로미스 안의 코드블럭이 실행됨
+  const bananaPromise = getBanana(); // 만들자 마자 안의 코드가 실행됨.
+  const apple = await applePromise; // 기다렸다가 실행
+  const banana = await bananaPromise;
   return `${apple} + ${banana}`;
 }
 
 pickFruits().then(console.log);
+*/
+
+// 하지만, 위 코드처럼은 쓰지는 않음
+
+// 3. useful Promise APIs
+function pickAllFruits() {
+  return Promise.all([getApple(), getBanana()]).then((fruits) =>
+    fruits.join(" + ")
+  ); //프로미스 배열을 전달하면, 모든 프로미스들이 병렬적으로 다 받아질때까지 기다려주고, 다 받아진 배열이 전달됨
+}
+
+pickAllFruits().then(console.log);
+
+// 첫번째 과일만 받아오고 싶다면 ?
+function pickOnlyOne() {
+  return Promise.race([getApple(), getBanana()]);
+} // 딱 하나만 먼저 실행되는 애가 전달됨
+
+pickOnlyOne().then(console.log);
